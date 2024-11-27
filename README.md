@@ -21,6 +21,10 @@ export type IConfig = {
    */
   className?: string
   /**
+   * 自定义容器，建议与 leafer 渲染点在同一层级
+   */
+  container?: HTMLDivElement
+  /**
    * 是否跟随缩放
    */
   followScale?: boolean
@@ -102,6 +106,7 @@ constructor(app: App, config: IConfig)
 | 属性                   | 类型     | 默认值                 | 说明               |
 | ---------------------- | -------- | ---------------------- | ------------------ |
 | `className`            | string   | 无                     | 自定义容器类       |
+| `container`            | HTMLDivElement | 无                     | 自定义容器，建议与 leafer 渲染点在同一层级 |
 | `followScale`          | boolean  | `false`                 | 是否跟随缩放       |
 | `shouldShow`           | function | `() => true`           | 是否显示 toolbar   |
 | `getContent`          | function | 无            | 获取 toolbar 内容 |

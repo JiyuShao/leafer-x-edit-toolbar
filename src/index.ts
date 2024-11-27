@@ -14,9 +14,13 @@ export const PLUGIN_NAME = 'leafer-x-edit-toolbar'
  */
 export type IConfig = {
   /**
-   * 自定义容器类
+   * 自定义容器类名
    */
   className?: string
+  /**
+   * 自定义容器，建议与 leafer 渲染点在同一层级
+   */
+  container?: HTMLDivElement
   /**
    * 是否跟随缩放
    */
@@ -105,15 +109,20 @@ export class EditToolbarPlugin {
    */
   private showToolbar(node: ILeaf) {
     if (!this.container) {
-      this.container = document.createElement('div')
+      if (this.config.container) {
+        this.container = this.config.container
+      } else {
+        this.container = document.createElement('div')
+        document.body.appendChild(this.container)
+      }
       this.container.classList.add(PLUGIN_NAME)
       if (this.config.className) {
         this.container.classList.add(this.config.className)
       }
       addStyle(this.container, {
         position: 'absolute',
+        whiteSpace: 'nowrap',
       })
-      document.body.appendChild(this.container)
     }
     this.container.innerHTML = this.getToolbarContent(node)
     const style: Partial<CSSStyleDeclaration> = {
@@ -170,7 +179,7 @@ export class EditToolbarPlugin {
       this.toolbarHandler
     )
     // 移除 toolbar
-    if (this.container && this.container.parentNode) {
+    if (this.container && this.container.parentNode && !this.config.container) {
       this.container.parentNode.removeChild(this.container)
     }
   }
