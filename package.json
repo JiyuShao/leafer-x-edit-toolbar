@@ -26,7 +26,7 @@
     "clean": "rimraf dev dist types",
     "start": "pnpm clean && cross-env NODE_ENV=development rollup -c -w",
     "build": "pnpm clean && cross-env PLATFORM=all rollup -c",
-    "publish": "pnpm run build && pnpm publish",
+    "prepublish": "pnpm run build",
     "test": "vitest"
   },
   "devDependencies": {
