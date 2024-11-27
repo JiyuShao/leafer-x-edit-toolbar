@@ -11,14 +11,23 @@ export const PLUGIN_NAME = 'leafer-x-edit-toolbar'
 
 /**
  * 用户配置
- * @param { string } className - 自定义样式
- * @param { (event: EditorEvent) => boolean } shouldShow - 是否显示 toolbar
- * @param { (node: ILeaf) => string } getContent - 获取 toolbar 内容
  */
-export type UserConfig = {
+export type IConfig = {
+  /**
+   * 自定义容器类
+   */
   className?: string
+  /**
+   * 是否跟随缩放
+   */
   followScale?: boolean
+  /**
+   * 是否显示 toolbar
+   */
   shouldShow?: (node: ILeaf) => boolean
+  /**
+   * 获取 toolbar 内容
+   */
   getContent: (node: ILeaf) => string
 }
 
@@ -36,12 +45,12 @@ export class EditToolbarPlugin {
   private container: HTMLDivElement
 
   /**
-   * @param { UserConfig } config - 用户配置
+   * @param { IConfig } config - 用户配置
    * @private
    */
-  private readonly config: UserConfig
+  private readonly config: IConfig
 
-  constructor(app: Leafer, config: UserConfig) {
+  constructor(app: Leafer, config: IConfig) {
     this.app = app
     this.config = config
 
@@ -114,7 +123,9 @@ export class EditToolbarPlugin {
     }
     if (this.config.followScale) {
       style.transformOrigin = 'left top'
-      style.transform = `scale(${node.worldTransform.scaleX}, ${node.worldTransform.scaleY}) translate(0, -100%)`
+      style.transform = `scale(${Math.abs(
+        node.worldTransform.scaleX
+      )}, ${Math.abs(node.worldTransform.scaleY)}) translate(0, -100%)`
     } else {
       style.transform = 'translate(0, -100%)'
     }
