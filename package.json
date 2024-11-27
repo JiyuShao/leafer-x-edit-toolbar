@@ -1,6 +1,6 @@
 {
   "name": "leafer-x-edit-toolbar",
-  "version": "1.0.4",
+  "version": "1.0.0",
   "author": "Jiyu Shao <jiyu.shao@gmail.com>",
   "license": "MIT",
   "type": "module",
@@ -26,6 +26,7 @@
     "clean": "rimraf dev dist types",
     "start": "pnpm clean && cross-env NODE_ENV=development rollup -c -w",
     "build": "pnpm clean && cross-env PLATFORM=all rollup -c",
+    "publish": "pnpm run build && pnpm publish",
     "test": "vitest"
   },
   "devDependencies": {
