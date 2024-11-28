@@ -1,6 +1,6 @@
 # leafer-x-edit-toolbar
 
-Leafer 编辑辅助工具栏插件
+Leafer 编辑辅助工具栏插件，[在线体验](https://jiyushao.github.io/leafer-x-edit-toolbar/)
 
 点阵背景插件，为 Leafer 应用提供可自定义的点阵背景。
 
@@ -17,7 +17,7 @@ npm install leafer-x-edit-toolbar
 ```typescript
 export type IConfig = {
   /**
-   * 自定义容器类
+   * 自定义容器类名
    */
   className?: string
   /**
@@ -33,9 +33,9 @@ export type IConfig = {
    */
   shouldShow?: (node: ILeaf) => boolean
   /**
-   * 获取 toolbar 内容
+   * 渲染 toolbar 内容
    */
-  getContent: (node: ILeaf) => string
+  onRender: (node: ILeaf, container: HTMLDivElement) => void
 }
 ```
 
@@ -57,21 +57,20 @@ app.sky = app.addLeafer({ type: 'draw', usePartRender: false })
 app.editor = new Editor()
 
 // 创建并添加插件实例
-const pluginIns =new EditToolbarPlugin(app, {
+const pluginIns = new EditToolbarPlugin(app, {
   className: 'edit-toolbar',
   followScale: true,
   shouldShow: (node) => {
     console.log('node', node)
     return true
   },
-  getContent(node) {
-    const dom = `<ul style="list-style: none; margin: 10px 0; padding: 5px; background-color: #fff; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+  onRender(node, container) {
+    container.innerHTML = `<ul style="list-style: none; margin: 10px 0; padding: 5px; background-color: #fff; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
       <li>节点类型：${node.tag}</li>
       <li>宽度：${node.width}</li>
       <li>高度：${node.height}</li>
     </ul>
     `
-    return dom
   },
 })
 
@@ -103,13 +102,13 @@ constructor(app: App, config: IConfig)
 
 #### 配置项
 
-| 属性                   | 类型     | 默认值                 | 说明               |
-| ---------------------- | -------- | ---------------------- | ------------------ |
-| `className`            | string   | 无                     | 自定义容器类       |
-| `container`            | HTMLDivElement | 无                     | 自定义容器，建议与 leafer 渲染点在同一层级 |
-| `followScale`          | boolean  | `false`                 | 是否跟随缩放       |
-| `shouldShow`           | function | `() => true`           | 是否显示 toolbar   |
-| `getContent`          | function | 无            | 获取 toolbar 内容 |
+| 属性          | 类型                                             | 默认值       | 说明                                       |
+| ------------- | ------------------------------------------------ | ------------ | ------------------------------------------ |
+| `className`   | string                                           | 无           | 自定义容器类                               |
+| `container`   | HTMLDivElement                                   | 无           | 自定义容器，建议与 leafer 渲染点在同一层级 |
+| `followScale` | boolean                                          | `false`      | 是否跟随缩放                               |
+| `shouldShow`  | (node: ILeaf) => boolean                         | `() => true` | 是否显示 toolbar                           |
+| `onRender`    | (node: ILeaf, container: HTMLDivElement) => void | 无           | 渲染 toolbar 内容                          |
 
 ### 实例方法
 
