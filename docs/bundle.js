@@ -14802,11 +14802,12 @@ class EditToolbarPlugin {
                 this.container.classList.add(this.config.className);
             }
             addStyle(this.container, {
+                pointerEvents: 'auto',
                 position: 'absolute',
                 whiteSpace: 'nowrap',
             });
         }
-        this.container.innerHTML = this.getToolbarContent(node);
+        this.config.onRender(node, this.container);
         const style = {
             display: 'block',
             left: `${node.worldBoxBounds.x}px`,
@@ -14828,13 +14829,6 @@ class EditToolbarPlugin {
             });
         }
     }
-    getToolbarContent(node) {
-        const argumentType = typeof this.config.getContent;
-        assert(argumentType !== 'function', `getContent 为必传参数，且必须是一个函数，当前为：${argumentType} 类型`);
-        const content = this.config.getContent(node);
-        assert(!content, 'getContent 返回值不能为空');
-        return content;
-    }
     destroy() {
         this.app.off([MoveEvent.MOVE, ZoomEvent.ZOOM], this.toolbarHandler);
         this.app.editor.off([
@@ -14846,11 +14840,6 @@ class EditToolbarPlugin {
         if (this.container && this.container.parentNode && !this.config.container) {
             this.container.parentNode.removeChild(this.container);
         }
-    }
-}
-function assert(condition, msg) {
-    if (condition) {
-        throw new Error(`[${PLUGIN_NAME}]: ${msg}`);
     }
 }
 function addStyle(element, cssStyles) {
@@ -14882,14 +14871,13 @@ new EditToolbarPlugin(app, {
         console.log('node', node);
         return true;
     },
-    getContent(node) {
-        const dom = `<ul style="list-style: none; margin: 10px 0; padding: 5px; background-color: #fff; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    onRender(node, container) {
+        container.innerHTML = `<ul style="list-style: none; margin: 10px 0; padding: 5px; background-color: #fff; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
       <li>节点类型：${node.tag}</li>
       <li>宽度：${node.width}</li>
       <li>高度：${node.height}</li>
     </ul>
     `;
-        return dom;
     },
 });
 app.editor.select([group]);

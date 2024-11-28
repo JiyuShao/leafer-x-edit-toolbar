@@ -42,14 +42,13 @@ describe('EditToolbarPlugin with scale', () => {
         console.log('node', node)
         return true
       },
-      getContent(node) {
-        const dom = `<ul style="list-style: none; margin: 10px 0; padding: 5px; background-color: #fff; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
-            <li>节点类型：${node.tag}</li>
-            <li>宽度：${node.width}</li>
-            <li>高度：${node.height}</li>
-          </ul>
-          `
-        return dom
+      onRender(node, container) {
+        container.innerHTML = `<ul style="list-style: none; margin: 10px 0; padding: 5px; background-color: #fff; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+          <li>节点类型：${node.tag}</li>
+          <li>宽度：${node.width}</li>
+          <li>高度：${node.height}</li>
+        </ul>
+        `
       },
     })
   })
@@ -61,8 +60,6 @@ describe('EditToolbarPlugin with scale', () => {
 
   test('destroy', () => {
     editToolbarPlugin.destroy()
-    expect(
-      document.querySelector(`.${PLUGIN_NAME}`)
-    ).toBe(null)
+    expect(document.querySelector(`.${PLUGIN_NAME}`)).toBe(null)
   })
 })

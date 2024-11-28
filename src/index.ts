@@ -1,4 +1,4 @@
-import { Leafer, MoveEvent, ZoomEvent } from '@leafer-ui/core'
+import { App, MoveEvent, ZoomEvent } from '@leafer-ui/core'
 import type { ILeaf } from '@leafer-ui/interface'
 import {
   EditorEvent,
@@ -30,17 +30,17 @@ export type IConfig = {
    */
   shouldShow?: (node: ILeaf) => boolean
   /**
-   * 获取 toolbar 内容
+   * 渲染 toolbar 内容
    */
-  getContent: (node: ILeaf) => string
+  onRender: (node: ILeaf, container: HTMLDivElement) => void
 }
 
 export class EditToolbarPlugin {
   /**
-   * @param { Leafer } app - leafer 实例
+   * @param { App } app - leafer app 实例
    * @private
    */
-  private readonly app: Leafer
+  private readonly app: App
 
   /**
    * @param { HTMLDivElement } container - toolbar DOM 容器
@@ -54,7 +54,7 @@ export class EditToolbarPlugin {
    */
   private readonly config: IConfig
 
-  constructor(app: Leafer, config: IConfig) {
+  constructor(app: App, config: IConfig) {
     this.app = app
     this.config = config
 
@@ -120,11 +120,12 @@ export class EditToolbarPlugin {
         this.container.classList.add(this.config.className)
       }
       addStyle(this.container, {
+        pointerEvents: 'auto',
         position: 'absolute',
         whiteSpace: 'nowrap',
       })
     }
-    this.container.innerHTML = this.getToolbarContent(node)
+    this.config.onRender(node, this.container)
     const style: Partial<CSSStyleDeclaration> = {
       display: 'block',
       left: `${node.worldBoxBounds.x}px`,
@@ -152,17 +153,6 @@ export class EditToolbarPlugin {
     }
   }
 
-  private getToolbarContent(node: ILeaf) {
-    const argumentType = typeof this.config.getContent
-    assert(
-      argumentType !== 'function',
-      `getContent 为必传参数，且必须是一个函数，当前为：${argumentType} 类型`
-    )
-    const content = this.config.getContent(node)
-    assert(!content, 'getContent 返回值不能为空')
-    return content
-  }
-
   /**
    * 销毁 toolbar
    */
@@ -182,17 +172,6 @@ export class EditToolbarPlugin {
     if (this.container && this.container.parentNode && !this.config.container) {
       this.container.parentNode.removeChild(this.container)
     }
-  }
-}
-
-/**
- * 异常抛出函数
- * @param condition
- * @param msg
- */
-function assert(condition: boolean, msg: string) {
-  if (condition) {
-    throw new Error(`[${PLUGIN_NAME}]: ${msg}`)
   }
 }
 
