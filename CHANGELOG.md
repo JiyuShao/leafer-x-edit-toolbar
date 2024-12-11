@@ -16,3 +16,7 @@
 
 - 支持自定义 toolbar 内容渲染 `onRender`
 - 修复 constructor 参数类型错误
+
+## 1.0.5
+
+- 支持禁用默认样式 `disableDefaultStyle`, 搭配 `onRender` 可实现更加灵活的效果

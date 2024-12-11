@@ -23,8 +23,15 @@ export type IConfig = {
   container?: HTMLDivElement
   /**
    * 是否跟随缩放
+   * @default false
    */
   followScale?: boolean
+  /**
+   * 是否使用默认样式，如果为 true 可以通过 onRender 实现更特殊的效果
+   * 注意：`true` 时，followScale 属性失效
+   * @default false
+   */
+  disableDefaultStyle?: boolean;
   /**
    * 是否显示 toolbar
    */
@@ -108,46 +115,57 @@ export class EditToolbarPlugin {
    * 显示 toolbar
    */
   private showToolbar(node: ILeaf) {
+    const { className, container, onRender, followScale = false, disableDefaultStyle = false } = this.config;
+    // 初始化渲染容器
     if (!this.container) {
-      if (this.config.container) {
-        this.container = this.config.container
+      if (container) {
+        this.container = container
       } else {
         this.container = document.createElement('div')
         document.body.appendChild(this.container)
       }
       this.container.classList.add(PLUGIN_NAME)
-      if (this.config.className) {
-        this.container.classList.add(this.config.className)
+      if (className) {
+        this.container.classList.add(className)
       }
-      addStyle(this.container, {
-        pointerEvents: 'auto',
-        position: 'absolute',
-        whiteSpace: 'nowrap',
-      })
+      if (!disableDefaultStyle) {
+        addStyle(this.container, {
+          pointerEvents: 'auto',
+          position: 'absolute',
+          whiteSpace: 'nowrap',
+        })
+      }
     }
-    this.config.onRender(node, this.container)
-    const style: Partial<CSSStyleDeclaration> = {
-      display: 'block',
-      left: `${node.worldBoxBounds.x}px`,
-      top: `${node.worldBoxBounds.y}px`,
+
+    // 触发渲染回调
+    onRender(node, this.container)
+
+    // 执行默认样式渲染逻辑
+    if (!disableDefaultStyle) {
+      const style: Partial<CSSStyleDeclaration> = {
+        display: 'block',
+        left: `${node.worldBoxBounds.x}px`,
+        top: `${node.worldBoxBounds.y}px`,
+      }
+      if (followScale) {
+        style.transformOrigin = 'left top'
+        style.transform = `scale(${Math.abs(
+          node.worldTransform.scaleX
+        )}, ${Math.abs(node.worldTransform.scaleY)}) translate(0, -100%)`
+      } else {
+        style.transform = 'translate(0, -100%)'
+      }
+      addStyle(this.container, style)
     }
-    if (this.config.followScale) {
-      style.transformOrigin = 'left top'
-      style.transform = `scale(${Math.abs(
-        node.worldTransform.scaleX
-      )}, ${Math.abs(node.worldTransform.scaleY)}) translate(0, -100%)`
-    } else {
-      style.transform = 'translate(0, -100%)'
-    }
-    addStyle(this.container, style)
   }
 
   /**
    * 隐藏 toolbar
    */
   private hideToolbar() {
-    if (this.container) {
-      addStyle(this.container, {
+    const { container, disableDefaultStyle = false } = this.config;
+    if (container && !disableDefaultStyle) {
+      addStyle(container, {
         display: 'none',
       })
     }
@@ -188,7 +206,7 @@ function addStyle(
   requestAnimationFrame(() => {
     Object.entries(cssStyles).forEach(([property, value]) => {
       // 确保属性名使用的是camelCase
-      ;(element.style as any)[property] = value
+      ; (element.style as any)[property] = value
     })
   })
 }

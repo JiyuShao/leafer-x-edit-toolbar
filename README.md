@@ -105,6 +105,7 @@ constructor(app: App, config: IConfig)
 | `className`   | string                                           | 无           | 自定义容器类                               |
 | `container`   | HTMLDivElement                                   | 无           | 自定义容器，建议与 leafer 渲染点在同一层级 |
 | `followScale` | boolean                                          | `false`      | 是否跟随缩放                               |
+| `disableDefaultStyle` | boolean                                          | `false`      | 是否使用默认样式，如果为 true 可以通过 onRender 实现更特殊的效果。注意：`true` 时，followScale 属性失效                               |
 | `shouldShow`  | (node: ILeaf) => boolean                         | `() => true` | 是否显示 toolbar                           |
 | `onRender`    | (node: ILeaf, container: HTMLDivElement) => void | 无           | 渲染 toolbar 内容                          |
 
